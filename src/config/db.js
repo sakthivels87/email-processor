@@ -1,9 +1,13 @@
 const mongoose = require("mongoose");
 
 const connectDB = async () => {
-  await mongoose.connect("mongodb://localhost:27017/central-notification");
-
-  console.log("MongoDB connected");
+  try {
+    await mongoose.connect("mongodb://localhost:27017/central-notification");
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("MongoDB connection failed", error);
+    process.exit(1);
+  }
 };
 
 module.exports = connectDB;

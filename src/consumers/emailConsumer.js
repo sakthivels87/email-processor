@@ -7,10 +7,9 @@ const { updateStatus } = require("../repositories/notificationRepository");
 
 async function startConsumer() {
   await consumer.connect();
-
   await consumer.subscribe({
     topic: "email",
-    fromBeginning: false,
+    fromBeginning: true,
   });
 
   await consumer.run({
@@ -18,13 +17,13 @@ async function startConsumer() {
       const payload = JSON.parse(message.value.toString());
 
       const { trackingId } = payload;
-
+      console.log("message consumed...", payload);
       try {
         logger.info("Email message received", { trackingId });
 
         const config = await getEmailConfig("email");
 
-        await sendEmail(config, payload);
+        // await sendEmail(config, payload);
 
         await updateStatus(
           trackingId,
@@ -55,7 +54,7 @@ async function processEmail(payload) {
     return;
   }
 
-  const config = await getEmailConfig("email");
+  const config = await getEmailConfig("pim-email");
 
   await sendEmail(config, payload);
 

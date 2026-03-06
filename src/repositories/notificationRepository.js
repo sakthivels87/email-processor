@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const connectDB = require("../config/db");
 
 const NotificationSchema = new mongoose.Schema({
   trackingId: String,
@@ -12,13 +13,36 @@ const Notification = mongoose.model(
 );
 
 async function updateStatus(trackingId, status, statusMessage) {
-  await Notification.updateOne(
-    { trackingId },
-    {
-      status,
-      statusMessage,
-    },
+  const collection = await connectDB();
+  console.log(
+    "updateStatus:::::",
+    trackingId,
+    "----status--->",
+    status,
+    "----statusMessage--->",
+    statusMessage,
   );
+  try {
+    await collection.updateOne(
+      { trackingId: trackingId },
+      {
+        $set: {
+          status: status,
+          statusMessage: statusMessage,
+          updatedAt: new Date(),
+        },
+      },
+      { upsert: true },
+    );
+  } catch (error) {
+    message.statusMessage = "Request failed in processing will retry shortly.";
+
+    await collection.insertOne(message);
+
+    logger.error("Processing failed", error);
+
+    throw error;
+  }
 }
 
 module.exports = {

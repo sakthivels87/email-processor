@@ -1,8 +1,8 @@
 require("dotenv").config();
 
-const connectDB = require("./config/db");
-const startConsumer = require("./consumers/emailConsumer");
-const logger = require("./config/logger");
+const connectDB = require("./src/config/db");
+const startConsumer = require("./src/consumers/emailConsumer");
+const logger = require("./src/config/logger");
 
 async function start() {
   try {
