@@ -15,13 +15,19 @@ async function startConsumer() {
   await consumer.run({
     eachMessage: async ({ message }) => {
       const payload = JSON.parse(message.value.toString());
+      const { trackingId } = payload;
+      logger.info("Email message received", { trackingId });
+    },
+  });
+  /*await consumer.run({
+    eachMessage: async ({ message }) => {
+      const payload = JSON.parse(message.value.toString());
 
       const { trackingId } = payload;
-      console.log("message consumed...", payload);
       try {
         logger.info("Email message received", { trackingId });
 
-        const config = await getEmailConfig("email");
+        //const config = await getEmailConfig("email");
 
         // await sendEmail(config, payload);
 
@@ -30,7 +36,6 @@ async function startConsumer() {
           "SEND",
           "Email successfully submitted to provider",
         );
-
         logger.info("Email processed successfully", { trackingId });
       } catch (error) {
         logger.error("Email processing failed", {
@@ -41,7 +46,7 @@ async function startConsumer() {
         await updateStatus(trackingId, "FAILED", error.message);
       }
     },
-  });
+  });*/
 }
 async function processEmail(payload) {
   const { trackingId } = payload;

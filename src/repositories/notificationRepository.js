@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const connectDB = require("../config/db");
+const { logger } = require("../config/kafka");
 
 const NotificationSchema = new mongoose.Schema({
   trackingId: String,
@@ -23,17 +24,18 @@ async function updateStatus(trackingId, status, statusMessage) {
     statusMessage,
   );
   try {
-    await collection.updateOne(
-      { trackingId: trackingId },
-      {
-        $set: {
-          status: status,
-          statusMessage: statusMessage,
-          updatedAt: new Date(),
-        },
-      },
-      { upsert: true },
-    );
+    // await collection.updateOne(
+    //   { trackingId: trackingId },
+    //   {
+    //     $set: {
+    //       status: status,
+    //       statusMessage: statusMessage,
+    //       updatedAt: new Date(),
+    //     },
+    //   },
+    //   { upsert: true },
+    // );
+    logger.info("Successfully updated in mongodb.", trackingId);
   } catch (error) {
     message.statusMessage = "Request failed in processing will retry shortly.";
 
