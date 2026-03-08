@@ -1,11 +1,12 @@
+const connectDB = require("../config/db");
 const consumer = require("../config/kafka");
 const logger = require("../config/logger");
-
 const { getEmailConfig } = require("../services/pimService");
 const { sendEmail } = require("../services/emailService");
 const { updateStatus } = require("../repositories/notificationRepository");
 
 async function startConsumer() {
+  const collection = await connectDB();
   await consumer.connect();
   await consumer.subscribe({
     topic: "email",
@@ -17,8 +18,19 @@ async function startConsumer() {
       const payload = JSON.parse(message.value.toString());
       const { trackingId } = payload;
       logger.info("Email message received", { trackingId });
+
+      if (trackingId) {
+        const updatedRequest = {
+          ...payload,
+          status: "RECEIVED",
+          statusMessage: `Request processed and submitted to ${payload.channel} service.`,
+          createdAt: new Date(),
+        };
+        await collection.insertOne(updatedRequest);
+      }
     },
   });
+
   /*await consumer.run({
     eachMessage: async ({ message }) => {
       const payload = JSON.parse(message.value.toString());

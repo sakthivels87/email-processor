@@ -1,13 +1,15 @@
-const mongoose = require("mongoose");
+const { MongoClient } = require("mongodb");
 
-const connectDB = async () => {
-  try {
-    await mongoose.connect("mongodb://localhost:27017/central-notification");
-    console.log("MongoDB connected");
-  } catch (error) {
-    console.error("MongoDB connection failed", error);
-    process.exit(1);
-  }
-};
+const uri = "mongodb://localhost:27017";
+
+const client = new MongoClient(uri);
+
+async function connectDB() {
+  await client.connect();
+  console.log("mongodb database....");
+  return client
+    .db("central-notification")
+    .collection("notification-interactions");
+}
 
 module.exports = connectDB;
